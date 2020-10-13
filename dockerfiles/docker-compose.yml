@@ -94,11 +94,12 @@ services:
     environment:
       - SCHEMAS=api,maker,public,oasis
       - DATABASE_URL=postgres://vdb:vdb@db:5432/vdb
+      - GRAPHILE_LICENSE=${GRAPHILE_LICENSE}
     depends_on:
       - db
     restart: always
-
-  # Optional in-cluster client. This will need to sync for a few days until you catch up with watched contracts
+  
+# Optional in-cluster client. This will need to sync for a few days until you catch up with watched contracts
   geth-statediffing:
     image: makerdao/vdb-go-ethereum:latest
     ports:
