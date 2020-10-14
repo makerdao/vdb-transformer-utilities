@@ -5,7 +5,7 @@ import (
 	"github.com/makerdao/vulcanizedb/libraries/shared/factories/event"
 )
 
-// Creates a transformer config by pulling values from configuration environment
+// GetEventTransformerConfig creates a transformer config by pulling values from configuration environment
 func GetEventTransformerConfig(transformerLabel, signature string) event.TransformerConfig {
 	contractNames := constants.GetTransformerContractNames(transformerLabel)
 	return event.TransformerConfig{
@@ -14,6 +14,6 @@ func GetEventTransformerConfig(transformerLabel, signature string) event.Transfo
 		ContractAbi:         constants.GetFirstABI(contractNames),
 		Topic:               signature,
 		StartingBlockNumber: constants.GetMinDeploymentBlock(contractNames),
-		EndingBlockNumber:   -1, // TODO Generalise endingBlockNumber
+		EndingBlockNumber:   -1,
 	}
 }
