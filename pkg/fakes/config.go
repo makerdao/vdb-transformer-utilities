@@ -12,7 +12,7 @@ import (
 func SetFakeConfig() {
 	logrus.SetOutput(ioutil.Discard)
 	viper.SetConfigName("config")
-	viper.AddConfigPath("$GOPATH/src/github.com/makerdao/vdb-transformer-utilities/pkg/fakes/")
+	viper.AddConfigPath("../../fakes")
 }
 
 func FakeHash() common.Hash {
