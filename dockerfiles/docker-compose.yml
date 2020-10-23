@@ -15,10 +15,10 @@
 # To stop the cluster, just `ctrl+c` (once, to allow a graceful exit)
 # To reset the cluster: `docker-compose down --volumes` (after stopping the cluster)
 #
-# Note that it'll take a couple of days for the client to sync with thge network before
+# Note that it'll take a couple of days for the client to sync with the network before
 # vdb can do it's work.
 
-version: "3.7"
+version: "3.8"
 services:
   header-sync:
     image: makerdao/vdb-headersync:latest # (needs wait-for-it.sh)
@@ -29,7 +29,7 @@ services:
       - DATABASE_PORT=5432
       - DATABASE_USER=vdb
       - DATABASE_PASSWORD=vdb
-      - STARTING_BLOCK_NUMBER=8928152
+      - STARTING_BLOCK_NUMBER=7183773
     depends_on:
       - db
     command: ["./wait-for-it.sh", "db:5432", "--strict", "--", "./startup_script.sh"]
