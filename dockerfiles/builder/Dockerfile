@@ -4,7 +4,8 @@
 FROM golang:1.15.2-buster as builder
 
 RUN apt-get update && \
-apt-get install -y make git g++ linux-headers-amd64
+    apt-get install -y \
+    make git g++ linux-headers-amd64
 
 ENV GO111MODULE on
 
