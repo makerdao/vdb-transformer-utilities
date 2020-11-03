@@ -53,6 +53,17 @@ func GetTransformerContractNames(transformerLabel string) []string {
 	return contracts
 }
 
+// GetContractABI returns the ABI for the given contract name
+func GetContractABI(contractName string) string {
+	initConfig()
+	configKey := "contract." + contractName + ".abi"
+	contractABI := viper.GetString(configKey)
+	if contractABI == "" {
+		logrus.Fatalf("No ABI configured for contract: \"%v\"", contractName)
+	}
+	return contractABI
+}
+
 // GetABIFromContractsWithMatchingABI gets the ABI for multiple contracts from config
 // Makes sure the ABI matches for all, since a single transformer may run against many contracts.
 func GetABIFromContractsWithMatchingABI(contractNames []string) string {
@@ -60,13 +71,13 @@ func GetABIFromContractsWithMatchingABI(contractNames []string) string {
 		logrus.Fatalf("No contracts to get ABI for")
 	}
 	initConfig()
-	contractABI := getContractABI(contractNames[0])
+	contractABI := GetContractABI(contractNames[0])
 	parsedABI, parseErr := eth.ParseAbi(contractABI)
 	if parseErr != nil {
 		panic(fmt.Sprintf("unable to parse ABI for %s", contractNames[0]))
 	}
 	for _, contractName := range contractNames[1:] {
-		nextABI := getContractABI(contractName)
+		nextABI := GetContractABI(contractName)
 		nextParsedABI, nextParseErr := eth.ParseAbi(nextABI)
 		if nextParseErr != nil {
 			panic(fmt.Sprintf("unable to parse ABI for %s", contractName))
@@ -84,16 +95,7 @@ func GetFirstABI(contractNames []string) string {
 		logrus.Fatalf("No contracts to get ABI for")
 	}
 	initConfig()
-	return getContractABI(contractNames[0])
-}
-
-func getContractABI(contractName string) string {
-	configKey := "contract." + contractName + ".abi"
-	contractABI := viper.GetString(configKey)
-	if contractABI == "" {
-		logrus.Fatalf("No ABI configured for contract: \"%v\"", contractName)
-	}
-	return contractABI
+	return GetContractABI(contractNames[0])
 }
 
 // Get the minimum deployment block for multiple contracts from config
