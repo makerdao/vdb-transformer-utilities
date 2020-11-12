@@ -140,6 +140,70 @@ func GetContractAddress(contract string) string {
 	return getEnvironmentString("contract." + contract + ".address")
 }
 
+type MismatchedConstructorsError struct {
+	constructorOne, constructorTwo string
+}
+
+func NewMismatchedConstructorsError(a, b abi.ABI) error {
+	return &MismatchedConstructorsError{
+		constructorOne: a.Constructor.String(),
+		constructorTwo: b.Constructor.String(),
+	}
+}
+
+func (err *MismatchedConstructorsError) Error() string {
+	return fmt.Sprintf("constructors don't match constructorOne: %s, constructorTwo: %s", err.constructorOne, err.constructorTwo)
+}
+
+type MismatchedOuterMethodsError struct {
+	method, methodOne, methodTwo string
+}
+
+func NewMismatchedOuterMethodsError(a, b abi.ABI, method string) error {
+	return &MismatchedOuterMethodsError{
+		method:    method,
+		methodOne: a.Methods[method].String(),
+		methodTwo: b.Methods[method].String(),
+	}
+}
+
+func (err *MismatchedOuterMethodsError) Error() string {
+	return fmt.Sprintf("outer methods don't match for method %s, method one: %s, method two: %s", err.method, err.methodOne, err.methodTwo)
+}
+
+type MismatchedOuterEventsError struct {
+	event, eventOne, eventTwo string
+}
+
+func NewMismatchedOuterEventsError(a, b abi.ABI, event string) error {
+	return &MismatchedOuterEventsError{
+		eventOne: a.Events[event].String(),
+		eventTwo: a.Events[event].String(),
+		event:    event,
+	}
+}
+
+func (err *MismatchedOuterEventsError) Error() string {
+	return fmt.Sprintf("outer events don't match for event %s, event one: %s, event two: %s", err.event, err.eventOne, err.eventTwo)
+}
+
+func CompareContractABI(a, b abi.ABI) error {
+	if a.Constructor.String() != b.Constructor.String() {
+		return NewMismatchedConstructorsError(a, b)
+	}
+	for ak, av := range a.Methods {
+		if av.String() != b.Methods[ak].String() {
+			return NewMismatchedOuterMethodsError(a, b, ak)
+		}
+	}
+	for ak, av := range a.Events {
+		if av.String() != b.Events[ak].String() {
+			return NewMismatchedOuterEventsError(a, b, ak)
+		}
+	}
+	return nil
+}
+
 func parsedABIsAreEqual(a, b abi.ABI) bool {
 	if a.Constructor.String() != b.Constructor.String() {
 		return false
