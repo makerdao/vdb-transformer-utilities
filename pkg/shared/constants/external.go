@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/makerdao/vulcanizedb/pkg/eth"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -82,8 +81,8 @@ func GetABIFromContractsWithMatchingABI(contractNames []string) string {
 		if nextParseErr != nil {
 			panic(fmt.Sprintf("unable to parse ABI for %s", contractName))
 		}
-		if !parsedABIsAreEqual(parsedABI, nextParsedABI) {
-			panic(fmt.Sprintf("ABIs don't match for contracts: %s", contractNames))
+		if compareErr := CompareContractABI(parsedABI, nextParsedABI); compareErr != nil {
+			panic(fmt.Errorf("ABIs don't match for contracts: %s and %s. Reason: %w", contractNames[0], contractName, compareErr))
 		}
 	}
 	return contractABI
@@ -138,29 +137,4 @@ func GetContractAddresses(contractNames []string) (addresses []string) {
 
 func GetContractAddress(contract string) string {
 	return getEnvironmentString("contract." + contract + ".address")
-}
-
-func parsedABIsAreEqual(a, b abi.ABI) bool {
-	if a.Constructor.String() != b.Constructor.String() {
-		return false
-	}
-OuterMethods:
-	for ak, av := range a.Methods {
-		for bk, bv := range b.Methods {
-			if ak == bk && av.String() == bv.String() {
-				continue OuterMethods
-			}
-		}
-		return false
-	}
-OuterEvents:
-	for ak, av := range a.Events {
-		for bk, bv := range b.Events {
-			if ak == bk && av.String() == bv.String() {
-				continue OuterEvents
-			}
-		}
-		return false
-	}
-	return true
 }
