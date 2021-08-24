@@ -12,4 +12,4 @@ require (
 	github.com/spf13/viper v1.7.1
 )
 
-replace github.com/ethereum/go-ethereum => github.com/makerdao/go-ethereum v1.10.6-vdb-go-ethereum
+replace github.com/ethereum/go-ethereum => github.com/makerdao/go-ethereum v1.10.8-vdb-go-ethereum
