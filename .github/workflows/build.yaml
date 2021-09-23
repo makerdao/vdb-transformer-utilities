@@ -1,0 +1,50 @@
+on:
+  push:
+    branches:
+      - main
+
+name: Build Docker images
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_ORG: makerdao
+      BUILDER_NAME: builder
+      RUNNER_NAME: runner
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Extract commit hash
+      id: vars
+      shell: bash
+      run: |
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        SHA_TAG: ${{ steps.vars.outputs.sha_short }}
+        LATEST_TAG: latest
+      run: |
+        # Build Docker images and
+        # push them to Docker repo
+        docker build -f dockerfiles/$BUILDER_NAME/Dockerfile \
+                     -t $DOCKER_ORG/vdb-$BUILDER_NAME:$SHA_TAG \
+                     -t $DOCKER_ORG/vdb-$BUILDER_NAME:$LATEST_TAG \
+                     .
+        docker build -f dockerfiles/$RUNNER_NAME/Dockerfile \
+                     -t $DOCKER_ORG/vdb-$RUNNER_NAME:$SHA_TAG \
+                     -t $DOCKER_ORG/vdb-$RUNNER_NAME:$LATEST_TAG \
+                     .
+        docker push $DOCKER_ORG/vdb-$BUILDER_NAME --all-tags
+        docker push $DOCKER_ORG/vdb-$RUNNER_NAME --all-tags
