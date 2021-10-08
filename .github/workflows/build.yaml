@@ -38,13 +38,13 @@ jobs:
       run: |
         # Build Docker images and
         # push them to Docker repo
-        docker build -f dockerfiles/$BUILDER_NAME/Dockerfile \
-                     -t $DOCKER_ORG/$BUILDER_NAME:$SHA_TAG \
-                     -t $DOCKER_ORG/$BUILDER_NAME:$LATEST_TAG \
+        docker build -f dockerfiles/$VDB_BUILDER_NAME/Dockerfile \
+                     -t $DOCKER_ORG/$VDB_BUILDER_NAME:$SHA_TAG \
+                     -t $DOCKER_ORG/$VDB_BUILDER_NAME:$LATEST_TAG \
                      .
-        docker build -f dockerfiles/$RUNNER_NAME/Dockerfile \
-                     -t $DOCKER_ORG/$RUNNER_NAME:$SHA_TAG \
-                     -t $DOCKER_ORG/$RUNNER_NAME:$LATEST_TAG \
+        docker build -f dockerfiles/$VDB_RUNNER_NAME/Dockerfile \
+                     -t $DOCKER_ORG/$VDB_RUNNER_NAME:$SHA_TAG \
+                     -t $DOCKER_ORG/$VDB_RUNNER_NAME:$LATEST_TAG \
                      .
-        docker push $DOCKER_ORG/$BUILDER_NAME --all-tags
-        docker push $DOCKER_ORG/$RUNNER_NAME --all-tags
+        docker push $DOCKER_ORG/$VDB_BUILDER_NAME --all-tags
+        docker push $DOCKER_ORG/$VDB_RUNNER_NAME --all-tags
