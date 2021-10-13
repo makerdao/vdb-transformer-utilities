@@ -1,0 +1,14 @@
+dist: trusty
+language: go
+go:
+  - 1.15
+go_import_path: github.com/makerdao/vdb-transformer-utilities
+script:
+  - go run github.com/onsi/ginkgo/ginkgo -r
+deploy:
+- provider: script
+  script: bash ./.travis/deploy.sh
+  on:
+    branch: main
+notifications:
+  email: false
