@@ -1,7 +1,7 @@
 # Base image for building the docker containers for building vulcanize projects.
 # Meant to be both an optimization of the build, and to remove duplication of the
 # various setup steps in other Dockerfiles.
-FROM golang:1.15.5-buster as builder
+FROM golang:1.17.3-bullseye as builder
 
 RUN apt-get update && \
     apt-get install -y \
